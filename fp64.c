@@ -802,7 +802,25 @@ static int newfp64(lua_State* L)
     int64_t n = fp64_zero;
     int type = lua_type(L, 1);
 
-    if (type == LUA_TSTRING)
+    // 如果已经是 fp64 userdata，直接返回原对象
+    if (type == LUA_TUSERDATA && _isfp64(L, 1))
+    {
+        lua_pushvalue(L, 1); // 将第1个参数重新推入栈中
+        return 1; // 返回1个值
+    }
+#ifdef USELIGHTUSERDATA
+    // 如果启用了USELIGHTUSERDATA，检查是否是lightuserdata且值不为0
+    else if (type == LUA_TLIGHTUSERDATA)
+    {
+        int64_t value = (int64_t)lua_touserdata(L, 1);
+        if (value != 0) // 如果值不为0，说明这是一个有效的fp64值
+        {
+            lua_pushvalue(L, 1); // 直接返回原对象
+            return 1;
+        }
+    }
+#endif
+    else if (type == LUA_TSTRING)
     {
         n = _parse_str(L, 1);
     }
