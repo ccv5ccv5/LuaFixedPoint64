@@ -595,7 +595,7 @@ static int _fp64mod(lua_State* L)
 
 static int _fp64unm(lua_State* L)
 {
-    fp64_t lhs = *(fp64_t*)lua_touserdata(L, 1);        
+    fp64_t lhs = tofp64(L, 1);       
     pushfp64(L, -lhs);
     return 1;
 }
@@ -825,6 +825,23 @@ static int newfp64(lua_State* L)
     return 1;
 }
 
+static int _fp64debug(lua_State* L)
+{
+    int type = lua_type(L, 1);
+    const char* type_name = luaL_typename(L, 1);
+    
+#ifdef USELIGHTUSERDATA
+    lua_pushstring(L, "USELIGHTUSERDATA enabled");
+#else
+    lua_pushstring(L, "USELIGHTUSERDATA disabled");
+#endif
+    
+    lua_pushstring(L, type_name);
+    lua_pushinteger(L, type);
+    
+    return 3;
+}
+
 static const struct luaL_Reg lib_fp64_meta [] = {
     {"__add", _fp64add},
     {"__sub", _fp64sub},
@@ -869,6 +886,7 @@ static const struct luaL_Reg lib_fp64 [] = {
     {"epsilon", NULL},
     {"rad2deg", NULL},
     {"deg2rad", NULL},
+    {"debug", _fp64debug},
     {"e", NULL},
     {NULL, NULL}
 };
