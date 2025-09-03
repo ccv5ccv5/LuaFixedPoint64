@@ -627,8 +627,8 @@ static int _fp64clamp(lua_State * L)
 
 static int _fp64eq(lua_State* L)
 {
-    fp64_t lhs = *(fp64_t*)lua_touserdata(L, 1);     
-    fp64_t rhs = *(fp64_t*)lua_touserdata(L, 2);     
+    fp64_t lhs = tofp64(L, 1);     
+    fp64_t rhs = tofp64(L, 2);     
     lua_pushboolean(L, lhs == rhs);    
     return 1;
 }
@@ -646,6 +646,22 @@ static int _fp64le(lua_State* L)
     fp64_t lhs = tofp64(L, 1); 
     fp64_t rhs = tofp64(L, 2);
     lua_pushboolean(L, lhs <= rhs);
+    return 1;
+}
+
+static int _fp64gt(lua_State* L)
+{
+    fp64_t lhs = tofp64(L, 1); 
+    fp64_t rhs = tofp64(L, 2);
+    lua_pushboolean(L, lhs > rhs);
+    return 1;
+}
+
+static int _fp64ge(lua_State* L)
+{
+    fp64_t lhs = tofp64(L, 1); 
+    fp64_t rhs = tofp64(L, 2);
+    lua_pushboolean(L, lhs >= rhs);
     return 1;
 }
 
@@ -870,6 +886,9 @@ static const struct luaL_Reg lib_fp64_meta [] = {
     {"__eq", _fp64eq},
     {"__lt", _fp64lt},
     {"__le", _fp64le},
+    {"__gt", _fp64gt},
+    {"__ge", _fp64ge},
+    {"__tonumber", _fp64tonumber},
     {"__tostring", _fp64tostring},
     {"__index", NULL},
     {NULL, NULL}
